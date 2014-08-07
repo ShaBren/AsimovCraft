@@ -1,0 +1,16 @@
+[
+{
+  "modid": "AsimovCraft",
+  "name": "AsimovCraft",
+  "description": "Add programmable robots to Minecraft!",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["ShaBren"],
+  "credits": "Mah Niggas",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]

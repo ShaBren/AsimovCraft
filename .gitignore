@@ -1,0 +1,12 @@
+.gradle
+gradle
+gradlew
+gradlew.bat
+.settings
+.classpath
+build
+.project
+eclipse
+bin
+*.swp
+lib/cachedir
