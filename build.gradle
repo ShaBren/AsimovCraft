@@ -40,7 +40,8 @@ dependencies {
     // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
 
-    compile files('libs/jython.jar')
+	compile "org.python:jython:2.7-b2"
+    //compile files('libs/jython.jar')
 }
 
 processResources
