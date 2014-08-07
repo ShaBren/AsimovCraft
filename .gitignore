@@ -10,3 +10,4 @@ eclipse
 bin
 *.swp
 lib/cachedir
+logs
