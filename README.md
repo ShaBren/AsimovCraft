@@ -15,5 +15,8 @@ The robot API is accessed via the `robot` variable in your Python script. There 
 ## Security Warning
 AsimovCraft currently provides no sandboxing for user code, so if you run it on a server, only allow users you trust to access it. They will effectively have full access to the user account running the server.
 
+## License
+AsimovCraft is available under the terms of the zlib license. See LICENSE.md for details.
+
 ## Author
 Stephen Bryant, also known on the internet as Sha`Bren.
