@@ -3,6 +3,7 @@ package com.shabren.asimovcraft;
 import java.util.concurrent.Semaphore;
 
 import cpw.mods.fml.common.SidedProxy;
+import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import net.minecraft.entity.Entity;
@@ -10,6 +11,7 @@ import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityFlying;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
@@ -20,11 +22,12 @@ public class EntityRobot extends EntityLiving
 		NONE, SLEEP, MOVE_FORWARD, MOVE_BACKWARD, MOVE_LEFT, MOVE_RIGHT, MOVE_UP, MOVE_DOWN
 	};
 
-	private JythonInterpreter interpreter = null;
+	private JythonInterpreter interpreter;
 	private final Semaphore available = new Semaphore( 1, true );
 	private RobotEventType nextEvent = RobotEventType.NONE;
 	private int currentTick = 0;
 	private int lastTick = 0;
+	private String owner;
 
 	public EntityRobot( World par1 )
 	{
@@ -33,12 +36,18 @@ public class EntityRobot extends EntityLiving
 		this.setSize( 1.0f, 1.0f );
 		this.isImmuneToFire = true;
 		this.noClip = true;
+	}
 
-		if ( !par1.isRemote )
+	public void loadSource( String source, EntityPlayer player )
+	{
+		owner = player.getCommandSenderName();
+
+		if ( !this.worldObj.isRemote )
 		{
 			interpreter = new JythonInterpreter();
 			interpreter.api = new RobotAPI( this );
-			interpreter.init();
+			interpreter.setSource( source );
+			interpreter.setOStream( new RobotOutputStream().setRobot( this ) );
 			interpreter.start();
 		}
 	}
@@ -190,5 +199,17 @@ public class EntityRobot extends EntityLiving
 	public void threadDied()
 	{
 
+	}
+
+	public void sendToOwner( String string )
+	{
+		EntityPlayer player = this.worldObj.getPlayerEntityByName( owner );
+
+		if ( player == null )
+		{
+			return;
+		}
+
+		player.addChatMessage( new ChatComponentText( string ) );
 	}
 }

@@ -2,6 +2,8 @@ package com.shabren.asimovcraft;
 
 import java.util.Random;
 
+import org.apache.logging.log4j.Logger;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.creativetab.CreativeTabs;
@@ -14,6 +16,10 @@ import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.event.FMLServerStartingEvent;
+import cpw.mods.fml.common.gameevent.InputEvent;
+import cpw.mods.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
+import cpw.mods.fml.common.gameevent.PlayerEvent.PlayerLoggedOutEvent;
 import cpw.mods.fml.common.registry.EntityRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 
@@ -31,6 +37,8 @@ public class AsimovCraft
 	@SidedProxy( clientSide = "com.shabren.asimovcraft.client.ClientProxy", serverSide = "com.shabren.asimovcraft.CommonProxy" )
 	public static CommonProxy proxy;
 
+	public static Logger logger;
+
 	@EventHandler
 	public void init( FMLInitializationEvent event )
 	{
@@ -42,6 +50,7 @@ public class AsimovCraft
 	@EventHandler
 	public void preInit( FMLPreInitializationEvent event )
 	{
+		logger = event.getModLog();
 	}
 
 	@EventHandler
@@ -61,4 +70,11 @@ public class AsimovCraft
 		EntityRegistry.registerModEntity( entityClass, name, entityID, instance, 64, 1, false );
 		EntityList.entityEggs.put( Integer.valueOf( entityID ), new EntityList.EntityEggInfo( entityID, primaryColor, secondaryColor ) );
 	}
+
+	@EventHandler
+	public void serverLoad( FMLServerStartingEvent event )
+	{
+		event.registerServerCommand( new RoboCodeCommand() );
+	}
+
 }

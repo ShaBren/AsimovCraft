@@ -1,5 +1,11 @@
 package com.shabren.asimovcraft;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.URL;
+
+import org.python.core.PyCode;
 import org.python.core.PyException;
 import org.python.core.PyInteger;
 import org.python.core.PyObject;
@@ -9,42 +15,79 @@ public class JythonInterpreter extends Thread
 {
 	private PythonInterpreter interp = null;
 	public RobotAPI api = null;
+	private String sourceID;
+	private OutputStream ostream;
+	public boolean keepRunning = true;
 
 	public JythonInterpreter()
 	{
 	}
 
-	public void init()
+	public void setSource( String sid )
 	{
-		interp = new PythonInterpreter();
+		sourceID = sid;
+	}
 
+	public void setOStream( OutputStream stream )
+	{
+		ostream = stream;
 	}
 
 	@Override
 	public void run()
 	{
-		// Set variable values within the PythonInterpreter instance
-		//interp.set( "a", new PyInteger( 42 ) );
-		//interp.exec( "print a" );
-		//interp.exec( "x = 2+2" );
+		while ( keepRunning )
+		{
+			if ( sourceID.length() > 0 )
+			{
+				String source = loadSource( sourceID );
 
-		// Obtain the value of an object from the PythonInterpreter and store it
-		// into a PyObject.
-		//PyObject x = interp.get( "x" );
-		//System.out.println( "x: " + x );
+				if ( source.length() > 0 )
+				{
+					interp = new PythonInterpreter();
+					interp.setOut( ostream );
 
-		//try
-		//{
-			interp.exec( "import com.shabren.asimovcraft.RobotAPI" );
-			interp.set( "robot", api );
-			//interp.exec( "while True: robot.goUp(); robot.goForward(); robot.goLeft(); robot.goDown(); robot.goBack(); robot.goRight()" );
-			interp.exec( "while True: robot.goForward()" );
-		//}
-		//catch ( InterruptedException e )
-		//{
-			//// TODO Auto-generated catch block
-			//e.printStackTrace();
-		//}
+					interp.exec( "import com.shabren.asimovcraft.RobotAPI" );
+					interp.set( "robot", api );
 
+					interp.exec( source );
+				}
+			}
+
+			try
+			{
+				this.wait();
+			}
+			catch ( InterruptedException e )
+			{
+			}
+		}
+	}
+
+	private String loadSource( String address )
+	{
+		StringBuilder output = new StringBuilder();
+
+		try
+		{
+			URL url = new URL( "http://haste.shabren.com/raw/" + address );
+			BufferedReader in = new BufferedReader( new InputStreamReader( url.openStream() ) );
+
+			String inputLine;
+
+			while ( ( inputLine = in.readLine() ) != null )
+			{
+				output.append( inputLine );
+				output.append( "\n" );
+			}
+
+			in.close();
+		}
+		catch ( Exception e )
+		{
+
+		}
+
+		return output.toString();
 	}
 }
