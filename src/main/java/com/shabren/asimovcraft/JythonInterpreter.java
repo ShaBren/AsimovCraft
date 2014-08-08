@@ -8,7 +8,7 @@ import org.python.util.PythonInterpreter;
 public class JythonInterpreter extends Thread
 {
 	private PythonInterpreter interp = null;
-	public EntityRobot robot = null;
+	public RobotAPI api = null;
 
 	public JythonInterpreter()
 	{
@@ -35,9 +35,10 @@ public class JythonInterpreter extends Thread
 
 		//try
 		//{
-			interp.exec( "import com.shabren.asimovcraft.EntityRobot" );
-			interp.set( "robot", robot );
-			interp.exec( "while True: robot.goTo( 0, 0, 0 )" );
+			interp.exec( "import com.shabren.asimovcraft.RobotAPI" );
+			interp.set( "robot", api );
+			//interp.exec( "while True: robot.goUp(); robot.goForward(); robot.goLeft(); robot.goDown(); robot.goBack(); robot.goRight()" );
+			interp.exec( "while True: robot.goForward()" );
 		//}
 		//catch ( InterruptedException e )
 		//{

@@ -58,7 +58,7 @@ public class AsimovCraft
 		int secondaryColor = rand.nextInt() * 16777215;
 
 		EntityRegistry.registerGlobalEntityID( entityClass, name, entityID );
-		EntityRegistry.registerModEntity( entityClass, name, entityID, instance, 64, 1, true );
+		EntityRegistry.registerModEntity( entityClass, name, entityID, instance, 64, 1, false );
 		EntityList.entityEggs.put( Integer.valueOf( entityID ), new EntityList.EntityEggInfo( entityID, primaryColor, secondaryColor ) );
 	}
 }
