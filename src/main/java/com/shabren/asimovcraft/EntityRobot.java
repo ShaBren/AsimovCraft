@@ -1,11 +1,13 @@
 package com.shabren.asimovcraft;
 
+import java.util.ArrayList;
 import java.util.concurrent.Semaphore;
 
 import cpw.mods.fml.common.SidedProxy;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
+import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityFlying;
@@ -19,15 +21,16 @@ public class EntityRobot extends EntityLiving
 {
 	public enum RobotEventType
 	{
-		NONE, SLEEP, MOVE_FORWARD, MOVE_BACKWARD, MOVE_LEFT, MOVE_RIGHT, MOVE_UP, MOVE_DOWN
+		NONE, SLEEP, MOVE_FORWARD, MOVE_BACKWARD, MOVE_LEFT, MOVE_RIGHT, MOVE_UP, MOVE_DOWN, TURN_RIGHT, TURN_LEFT, TURN_180,
 	};
 
 	private JythonInterpreter interpreter;
 	private final Semaphore available = new Semaphore( 1, true );
-	private RobotEventType nextEvent = RobotEventType.NONE;
+	//private RobotEventType nextEvent = RobotEventType.NONE;
 	private int currentTick = 0;
 	private int lastTick = 0;
 	private String owner;
+	private RobotEvent nextEvent;
 
 	public EntityRobot( World par1 )
 	{
@@ -129,55 +132,20 @@ public class EntityRobot extends EntityLiving
 	{
 		this.worldObj.theProfiler.startSection( "robotTick" );
 
-		switch ( nextEvent )
+		if ( nextEvent != null )
 		{
-		case NONE:
-			break;
-
-		case SLEEP:
-			break;
-
-		case MOVE_FORWARD:
-			this.goTo( posX + 1, posY, posZ );
-			break;
-
-		case MOVE_BACKWARD:
-			this.goTo( posX - 1, posY, posZ );
-			break;
-
-		case MOVE_LEFT:
-			this.goTo( posX, posY, posZ - 1 );
-			break;
-
-		case MOVE_RIGHT:
-			this.goTo( posX, posY, posZ + 1 );
-			break;
-
-		case MOVE_UP:
-			this.goTo( posX, posY + 1, posZ );
-			break;
-
-		case MOVE_DOWN:
-			this.goTo( posX, posY - 1, posZ );
-			break;
-
-		default:
-			break;
-		}
-
-		if ( nextEvent != RobotEventType.NONE )
-		{
+			nextEvent.run( this );
 			lastTick = currentTick;
 		}
-
-		nextEvent = RobotEventType.NONE;
+		
+		nextEvent = null;
 
 		available.release();
 
 		this.worldObj.theProfiler.endSection();
 	}
 
-	public void queueEvent( RobotEventType event )
+	public void queueEvent( RobotEvent event )
 	{
 		try
 		{
@@ -189,6 +157,44 @@ public class EntityRobot extends EntityLiving
 		}
 
 		nextEvent = event;
+	}
+
+	public void turn( float degrees )
+	{
+		if ( Math.abs( degrees ) > 360 )
+		{
+			return;
+		}
+
+		float facing = Math.round( this.rotationYaw / 90 );
+
+		this.rotationYaw = ( ( facing * 90 ) + degrees ) % 360;
+		
+		if ( this.rotationYaw < 0 )
+		{
+			this.rotationYaw = 360 + this.rotationYaw;
+		}
+	}
+
+	public void move( double offsetX, double offsetY, double offsetZ )
+	{
+		int facing = ( int )Math.round( this.rotationYaw / 90 );
+
+		switch ( facing )
+		{
+		case 0:
+			this.goTo( posX + offsetX, posY + offsetY, posZ + offsetZ );
+			break;
+		case 1:
+			this.goTo( posX - offsetZ, posY + offsetY, posZ + offsetX );
+			break;
+		case 2:
+			this.goTo( posX - offsetX, posY + offsetY, posZ - offsetZ );
+			break;
+		case 3:
+			this.goTo( posX + offsetZ, posY + offsetY, posZ - offsetX );
+			break;
+		}
 	}
 
 	public void goTo( double pPosX, double pPosY, double pPosZ )
@@ -211,5 +217,15 @@ public class EntityRobot extends EntityLiving
 		}
 
 		player.addChatMessage( new ChatComponentText( string ) );
+	}
+
+	public void breakBlock( int x, int y, int z )
+	{
+		Block b = this.worldObj.getBlock( x, y, z );
+
+		ArrayList< ItemStack > drops = b.getDrops( this.worldObj, x, y, z, this.worldObj.getBlockMetadata( x, y, z ), 0 );
+		b.dropBlockAsItem( this.worldObj, x, y, z, this.worldObj.getBlockMetadata( x, y, z ), 0 );
+		this.worldObj.removeTileEntity( x, y, z );
+		this.worldObj.setBlockToAir( x, y, z );
 	}
 }

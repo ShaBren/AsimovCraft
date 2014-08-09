@@ -13,37 +13,37 @@ public class RobotAPI
 
 	public boolean goForward()
 	{
-		robot.queueEvent( RobotEventType.MOVE_FORWARD );
+		robot.queueEvent( new RobotEvent() { public void run( EntityRobot robot ) { robot.move( 1, 0, 0 ); } } );
 		return true;
 	}
 
 	public boolean goBack()
 	{
-		robot.queueEvent( RobotEventType.MOVE_BACKWARD );
+		robot.queueEvent( new RobotEvent() { public void run( EntityRobot robot ) { robot.move( -1, 0, 0 ); } } );
 		return true;
 	}
 
 	public boolean goLeft()
 	{
-		robot.queueEvent( RobotEventType.MOVE_LEFT );
+		robot.queueEvent( new RobotEvent() { public void run( EntityRobot robot ) { robot.move( 0, 0, -1 ); } } );
 		return true;
 	}
 
 	public boolean goRight()
 	{
-		robot.queueEvent( RobotEventType.MOVE_RIGHT );
+		robot.queueEvent( new RobotEvent() { public void run( EntityRobot robot ) { robot.move( 0, 0, 1 ); } } );
 		return true;
 	}
 
 	public boolean goUp()
 	{
-		robot.queueEvent( RobotEventType.MOVE_UP );
+		robot.queueEvent( new RobotEvent() { public void run( EntityRobot robot ) { robot.move( 0, 1, 0 ); } } );
 		return true;
 	}
 
 	public boolean goDown()
 	{
-		robot.queueEvent( RobotEventType.MOVE_DOWN );
+		robot.queueEvent( new RobotEvent() { public void run( EntityRobot robot ) { robot.move( 0, -1, 0 ); } } );
 		return true;
 	}
 
