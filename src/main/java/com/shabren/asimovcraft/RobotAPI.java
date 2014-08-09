@@ -1,7 +1,5 @@
 package com.shabren.asimovcraft;
 
-import com.shabren.asimovcraft.EntityRobot.RobotEventType;
-
 public class RobotAPI
 {
 	private EntityRobot robot;
@@ -45,6 +43,45 @@ public class RobotAPI
 	{
 		robot.queueEvent( new RobotEvent() { public void run( EntityRobot robot ) { robot.move( 0, -1, 0 ); } } );
 		return true;
+	}
+
+	public boolean sleep()
+	{
+		robot.queueEvent( new RobotEvent() { public void run( EntityRobot robot ) {} } );
+		return true;
+	}
+
+	public boolean turnRight()
+	{
+		robot.queueEvent( new RobotEvent() { public void run( EntityRobot robot ) { robot.turn( 90 );} } );
+		return true;
+	}
+
+	public boolean turnLeft()
+	{
+		robot.queueEvent( new RobotEvent() { public void run( EntityRobot robot ) { robot.turn( -90 );} } );
+		return true;
+	}
+
+	public boolean turnAround()
+	{
+		robot.queueEvent( new RobotEvent() { public void run( EntityRobot robot ) { robot.turn( 180 );} } );
+		return true;
+	}
+
+	public int getX()
+	{
+		return ( int )robot.posX;
+	}
+
+	public int getY()
+	{
+		return ( int )robot.posY;
+	}
+
+	public int getZ()
+	{
+		return ( int )robot.posZ;
 	}
 
 }

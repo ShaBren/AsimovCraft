@@ -70,7 +70,7 @@ public class JythonInterpreter extends Thread
 
 		try
 		{
-			URL url = new URL( "http://haste.shabren.com/raw/" + address );
+			URL url = new URL( "https://gist.githubusercontent.com/ShaBren/" + address + "/raw/" );
 			BufferedReader in = new BufferedReader( new InputStreamReader( url.openStream() ) );
 
 			String inputLine;

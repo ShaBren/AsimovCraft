@@ -19,18 +19,16 @@ import net.minecraft.nbt.NBTTagCompound;
 
 public class EntityRobot extends EntityLiving
 {
-	public enum RobotEventType
-	{
-		NONE, SLEEP, MOVE_FORWARD, MOVE_BACKWARD, MOVE_LEFT, MOVE_RIGHT, MOVE_UP, MOVE_DOWN, TURN_RIGHT, TURN_LEFT, TURN_180,
-	};
-
 	private JythonInterpreter interpreter;
 	private final Semaphore available = new Semaphore( 1, true );
-	//private RobotEventType nextEvent = RobotEventType.NONE;
 	private int currentTick = 0;
 	private int lastTick = 0;
 	private String owner;
 	private RobotEvent nextEvent;
+	private static final int POS_X = 20;
+	private static final int POS_Y = 21;
+	private static final int POS_Z = 22;
+	private static final int ROT_Y = 23;
 
 	public EntityRobot( World par1 )
 	{
@@ -39,6 +37,16 @@ public class EntityRobot extends EntityLiving
 		this.setSize( 1.0f, 1.0f );
 		this.isImmuneToFire = true;
 		this.noClip = true;
+
+		this.dataWatcher.addObject( POS_X, Float.valueOf( 0.0f ) );
+		this.dataWatcher.addObject( POS_Y, Float.valueOf( 0.0f ) );
+		this.dataWatcher.addObject( POS_Z, Float.valueOf( 0.0f ) );
+		this.dataWatcher.addObject( ROT_Y, Float.valueOf( 0.0f ) );
+
+		this.dataWatcher.updateObject( POS_X, Float.valueOf( ( float )this.posX ) );
+		this.dataWatcher.updateObject( POS_Y, Float.valueOf( ( float )this.posY ) );
+		this.dataWatcher.updateObject( POS_Z, Float.valueOf( ( float )this.posZ ) );
+		this.dataWatcher.updateObject( ROT_Y, Float.valueOf( ( float )this.rotationYaw ) );
 	}
 
 	public void loadSource( String source, EntityPlayer player )
@@ -70,57 +78,26 @@ public class EntityRobot extends EntityLiving
 	{
 		super.onUpdate();
 
-		if ( currentTick % 10 == 0 )
+		if ( this.worldObj.isRemote )
 		{
-			this.processPendingEvent();
-		}
+			this.setPosition( this.dataWatcher.getWatchableObjectFloat( POS_X ), this.dataWatcher.getWatchableObjectFloat( POS_Y ), this.dataWatcher.getWatchableObjectFloat( POS_Z ) );
 
-		currentTick++;
+			this.rotationYaw = this.dataWatcher.getWatchableObjectFloat( ROT_Y );
+		}
+		else
+		{
+			if ( currentTick % 10 == 0 )
+			{
+				this.processPendingEvent();
+			}
+
+			currentTick++;
+		}
 	}
 
 	@Override
 	public void onLivingUpdate()
 	{
-		if ( this.newPosRotationIncrements > 0 )
-		{
-			double d0 = this.posX + ( this.newPosX - this.posX ) / ( double )this.newPosRotationIncrements;
-			double d1 = this.posY + ( this.newPosY - this.posY ) / ( double )this.newPosRotationIncrements;
-			double d2 = this.posZ + ( this.newPosZ - this.posZ ) / ( double )this.newPosRotationIncrements;
-			double d3 = MathHelper.wrapAngleTo180_double( this.newRotationYaw - ( double )this.rotationYaw );
-			this.rotationYaw = ( float )( ( double )this.rotationYaw + d3 / ( double )this.newPosRotationIncrements );
-			this.rotationPitch = ( float )( ( double )this.rotationPitch + ( this.newRotationPitch - ( double )this.rotationPitch ) / ( double )this.newPosRotationIncrements );
-			--this.newPosRotationIncrements;
-			this.setPosition( d0, d1, d2 );
-			this.setRotation( this.rotationYaw, this.rotationPitch );
-		}
-		else if ( !this.isClientWorld() )
-		{
-			this.motionX *= 0.98D;
-			this.motionY *= 0.98D;
-			this.motionZ *= 0.98D;
-		}
-
-		if ( Math.abs( this.motionX ) < 0.005D )
-		{
-			this.motionX = 0.0D;
-		}
-
-		if ( Math.abs( this.motionY ) < 0.005D )
-		{
-			this.motionY = 0.0D;
-		}
-
-		if ( Math.abs( this.motionZ ) < 0.005D )
-		{
-			this.motionZ = 0.0D;
-		}
-
-		this.worldObj.theProfiler.startSection( "travel" );
-		this.moveStrafing *= 0.98F;
-		this.moveForward *= 0.98F;
-		this.randomYawVelocity *= 0.9F;
-		this.moveEntityWithHeading( this.moveStrafing, this.moveForward );
-		this.worldObj.theProfiler.endSection();
 	}
 
 	@Override
@@ -137,7 +114,7 @@ public class EntityRobot extends EntityLiving
 			nextEvent.run( this );
 			lastTick = currentTick;
 		}
-		
+
 		nextEvent = null;
 
 		available.release();
@@ -166,19 +143,21 @@ public class EntityRobot extends EntityLiving
 			return;
 		}
 
-		float facing = Math.round( this.rotationYaw / 90 );
+		float facing = Math.round( ( this.rotationYaw + 45 ) / 90 );
 
-		this.rotationYaw = ( ( facing * 90 ) + degrees ) % 360;
-		
+		this.rotationYaw = ( ( ( facing * 90 ) + degrees ) % 360 ) - 45;
+
 		if ( this.rotationYaw < 0 )
 		{
 			this.rotationYaw = 360 + this.rotationYaw;
 		}
+
+		this.dataWatcher.updateObject( ROT_Y, Float.valueOf( ( float )this.rotationYaw ) );
 	}
 
 	public void move( double offsetX, double offsetY, double offsetZ )
 	{
-		int facing = ( int )Math.round( this.rotationYaw / 90 );
+		int facing = ( int )Math.round( ( this.rotationYaw + 45 ) / 90 );
 
 		switch ( facing )
 		{
@@ -199,7 +178,11 @@ public class EntityRobot extends EntityLiving
 
 	public void goTo( double pPosX, double pPosY, double pPosZ )
 	{
-		this.setPositionAndUpdate( pPosX, pPosY, pPosZ );
+		this.setPosition( pPosX, pPosY, pPosZ );
+
+		this.dataWatcher.updateObject( POS_X, Float.valueOf( ( float )this.posX ) );
+		this.dataWatcher.updateObject( POS_Y, Float.valueOf( ( float )this.posY ) );
+		this.dataWatcher.updateObject( POS_Z, Float.valueOf( ( float )this.posZ ) );
 	}
 
 	public void threadDied()
