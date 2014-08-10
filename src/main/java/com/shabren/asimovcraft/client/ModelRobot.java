@@ -9,8 +9,6 @@ import net.minecraft.entity.Entity;
 public class ModelRobot extends ModelBase
 {
 	public ModelRenderer box;
-
-	public static float lastRotation = 0;
 	
 	public ModelRobot()
 	{
