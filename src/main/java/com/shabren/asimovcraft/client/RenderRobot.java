@@ -10,7 +10,7 @@ public class RenderRobot extends RenderLiving
 
 	public RenderRobot()
 	{
-		super( new ModelRobot(), 0.25f );
+		super( new ModelRobot(), 1.0f );
 	}
 
 	@Override

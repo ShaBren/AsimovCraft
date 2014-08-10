@@ -44,7 +44,7 @@ public class AsimovCraft
 	{
 		proxy.registerRenderers();
 		GameRegistry.registerBlock( robotController, "robotController" );
-		registerEntity( EntityRobot.class, "entityRobot" );
+		EntityRegistry.registerModEntity( EntityRobot.class, "entityRobot", 0, instance, 64, 1, false );
 	}
 
 	@EventHandler
@@ -56,19 +56,6 @@ public class AsimovCraft
 	@EventHandler
 	public void postInit( FMLPostInitializationEvent event )
 	{
-	}
-
-	public static void registerEntity( Class entityClass, String name )
-	{
-		//int entityID = EntityRegistry.findGlobalUniqueEntityId();
-		//long seed = name.hashCode();
-		//Random rand = new Random( seed );
-		//int primaryColor = rand.nextInt() * 16777215;
-		//int secondaryColor = rand.nextInt() * 16777215;
-
-		//EntityRegistry.registerGlobalEntityID( entityClass, name, entityID );
-		EntityRegistry.registerModEntity( entityClass, name, 0, instance, 64, 1, false );
-		//EntityList.entityEggs.put( Integer.valueOf( entityID ), new EntityList.EntityEggInfo( entityID, primaryColor, secondaryColor ) );
 	}
 
 	@EventHandler

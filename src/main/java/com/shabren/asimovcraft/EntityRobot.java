@@ -19,39 +19,51 @@ import net.minecraft.nbt.NBTTagCompound;
 
 public class EntityRobot extends EntityLiving
 {
-	private JythonInterpreter interpreter;
-	private final Semaphore available = new Semaphore( 1, true );
-	private int currentTick = 0;
-	private int lastTick = 0;
-	private String owner;
-	private RobotEvent nextEvent;
+	public static class Facing
+	{
+		public static final int NORTH = 0;
+		public static final int EAST = 1;
+		public static final int SOUTH = 2;
+		public static final int WEST = 3;
+	};
+
 	private static final int POS_X = 20;
 	private static final int POS_Y = 21;
 	private static final int POS_Z = 22;
-	private static final int ROT_Y = 23;
+	private static final int FACING = 23;
+
+	private String owner;
+	private String lastSource;
+	private RobotEvent nextEvent;
+	private JythonInterpreter interpreter;
+	private final Semaphore available = new Semaphore( 1, true );
+	private int facing = Facing.NORTH;
+	private int currentTick = 0;
+	private int lastTick = 0;
 
 	public EntityRobot( World par1 )
 	{
 		super( par1 );
 
-		this.setSize( 1.0f, 1.0f );
+		this.setSize( 0.5f, 0.5f );
 		this.isImmuneToFire = true;
 		this.noClip = true;
 
 		this.dataWatcher.addObject( POS_X, Float.valueOf( 0.0f ) );
 		this.dataWatcher.addObject( POS_Y, Float.valueOf( 0.0f ) );
 		this.dataWatcher.addObject( POS_Z, Float.valueOf( 0.0f ) );
-		this.dataWatcher.addObject( ROT_Y, Float.valueOf( 0.0f ) );
+		this.dataWatcher.addObject( FACING, Integer.valueOf( 0 ) );
 
 		this.dataWatcher.updateObject( POS_X, Float.valueOf( ( float )this.posX ) );
-		this.dataWatcher.updateObject( POS_Y, Float.valueOf( ( float )this.posY ) );
+		this.dataWatcher.updateObject( POS_Y, Float.valueOf( ( float )this.posY + 0.5f ) );
 		this.dataWatcher.updateObject( POS_Z, Float.valueOf( ( float )this.posZ ) );
-		this.dataWatcher.updateObject( ROT_Y, Float.valueOf( ( float )this.rotationYaw ) );
+		this.dataWatcher.updateObject( FACING, Integer.valueOf( facing ) );
 	}
 
-	public void loadSource( String source, EntityPlayer player )
+	public void loadSource( String source, String player )
 	{
-		owner = player.getCommandSenderName();
+		owner = player;
+		lastSource = source;
 
 		if ( !this.worldObj.isRemote )
 		{
@@ -80,9 +92,7 @@ public class EntityRobot extends EntityLiving
 
 		if ( this.worldObj.isRemote )
 		{
-			this.setPosition( this.dataWatcher.getWatchableObjectFloat( POS_X ), this.dataWatcher.getWatchableObjectFloat( POS_Y ), this.dataWatcher.getWatchableObjectFloat( POS_Z ) );
-
-			this.rotationYaw = this.dataWatcher.getWatchableObjectFloat( ROT_Y );
+			this.setPositionAndUpdate( this.dataWatcher.getWatchableObjectFloat( POS_X ), this.dataWatcher.getWatchableObjectFloat( POS_Y ), this.dataWatcher.getWatchableObjectFloat( POS_Z ) );
 		}
 		else
 		{
@@ -97,11 +107,6 @@ public class EntityRobot extends EntityLiving
 
 	@Override
 	public void onLivingUpdate()
-	{
-	}
-
-	@Override
-	public void moveEntityWithHeading( float p_70612_1_, float p_70612_2_ )
 	{
 	}
 
@@ -136,41 +141,33 @@ public class EntityRobot extends EntityLiving
 		nextEvent = event;
 	}
 
-	public void turn( float degrees )
+	// direction = 1 for right, -1 for left
+	public void turn( int direction )
 	{
-		if ( Math.abs( degrees ) > 360 )
+		facing = ( facing + direction ) % 4;
+
+		if ( facing < 0 )
 		{
-			return;
+			facing += 4;
 		}
 
-		float facing = Math.round( ( this.rotationYaw + 45 ) / 90 );
-
-		this.rotationYaw = ( ( ( facing * 90 ) + degrees ) % 360 ) - 45;
-
-		if ( this.rotationYaw < 0 )
-		{
-			this.rotationYaw = 360 + this.rotationYaw;
-		}
-
-		this.dataWatcher.updateObject( ROT_Y, Float.valueOf( ( float )this.rotationYaw ) );
+		this.dataWatcher.updateObject( FACING, Integer.valueOf( facing ) );
 	}
 
 	public void move( double offsetX, double offsetY, double offsetZ )
 	{
-		int facing = ( int )Math.round( ( this.rotationYaw + 45 ) / 90 );
-
 		switch ( facing )
 		{
-		case 0:
+		case Facing.NORTH:
 			this.goTo( posX + offsetX, posY + offsetY, posZ + offsetZ );
 			break;
-		case 1:
+		case Facing.EAST:
 			this.goTo( posX - offsetZ, posY + offsetY, posZ + offsetX );
 			break;
-		case 2:
+		case Facing.SOUTH:
 			this.goTo( posX - offsetX, posY + offsetY, posZ - offsetZ );
 			break;
-		case 3:
+		case Facing.WEST:
 			this.goTo( posX + offsetZ, posY + offsetY, posZ - offsetX );
 			break;
 		}
@@ -178,16 +175,41 @@ public class EntityRobot extends EntityLiving
 
 	public void goTo( double pPosX, double pPosY, double pPosZ )
 	{
-		this.setPosition( pPosX, pPosY, pPosZ );
+		this.setPositionAndUpdate( pPosX, pPosY, pPosZ );
 
 		this.dataWatcher.updateObject( POS_X, Float.valueOf( ( float )this.posX ) );
-		this.dataWatcher.updateObject( POS_Y, Float.valueOf( ( float )this.posY ) );
+		this.dataWatcher.updateObject( POS_Y, Float.valueOf( ( float )this.posY + 0.5f ) );
 		this.dataWatcher.updateObject( POS_Z, Float.valueOf( ( float )this.posZ ) );
 	}
 
 	public void threadDied()
 	{
 
+	}
+
+	public void writeEntityToNBT( NBTTagCompound par )
+	{
+		super.writeEntityToNBT( par );
+
+		par.setDouble( "pos_x", this.posX );
+		par.setDouble( "pos_y", this.posY );
+		par.setDouble( "pos_z", this.posZ );
+		par.setString( "source", this.lastSource );
+		par.setString( "owner", this.owner );
+		par.setInteger( "facing", this.facing );
+	}
+
+	public void readEntityFromNBT( NBTTagCompound par )
+	{
+		super.readEntityFromNBT( par );
+
+		this.goTo( par.getDouble( "pos_x" ), par.getDouble( "pos_y" ), par.getDouble( "pos_z" ) );
+		this.facing = par.getInteger( "facing" );
+		this.owner = par.getString( "owner" );
+
+		String source = par.getString( "source" );
+
+		this.loadSource( source, owner );
 	}
 
 	public void sendToOwner( String string )

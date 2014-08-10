@@ -53,19 +53,19 @@ public class RobotAPI
 
 	public boolean turnRight()
 	{
-		robot.queueEvent( new RobotEvent() { public void run( EntityRobot robot ) { robot.turn( 90 );} } );
+		robot.queueEvent( new RobotEvent() { public void run( EntityRobot robot ) { robot.turn( 1 );} } );
 		return true;
 	}
 
 	public boolean turnLeft()
 	{
-		robot.queueEvent( new RobotEvent() { public void run( EntityRobot robot ) { robot.turn( -90 );} } );
+		robot.queueEvent( new RobotEvent() { public void run( EntityRobot robot ) { robot.turn( -1 );} } );
 		return true;
 	}
 
 	public boolean turnAround()
 	{
-		robot.queueEvent( new RobotEvent() { public void run( EntityRobot robot ) { robot.turn( 180 );} } );
+		robot.queueEvent( new RobotEvent() { public void run( EntityRobot robot ) { robot.turn( 2 );} } );
 		return true;
 	}
 
