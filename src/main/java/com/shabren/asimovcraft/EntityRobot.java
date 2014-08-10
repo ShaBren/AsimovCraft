@@ -34,9 +34,9 @@ public class EntityRobot extends EntityLiving
 	private RobotEvent nextEvent;
 	private JythonInterpreter interpreter;
 	private final Semaphore available = new Semaphore( 1, true );
-	private int facing = Facing.NORTH;
 	private int currentTick = 0;
 	private int lastTick = 0;
+	public int facing = Facing.NORTH;
 
 	public EntityRobot( World par1 )
 	{
@@ -45,8 +45,6 @@ public class EntityRobot extends EntityLiving
 		this.setSize( 1.0f, 1.0f );
 		this.isImmuneToFire = true;
 		this.noClip = true;
-		this.yOffset = 0.0f;
-		this.ySize = 1.0f;
 
 		this.dataWatcher.addObject( FACING, Integer.valueOf( 0 ) );
 
@@ -85,6 +83,7 @@ public class EntityRobot extends EntityLiving
 
 		if ( this.worldObj.isRemote )
 		{
+			this.renderYawOffset = 0;
 		}
 		else
 		{
