@@ -6,11 +6,11 @@ import java.io.OutputStream;
 public class RobotOutputStream extends OutputStream
 {
 	private StringBuilder buffer = new StringBuilder();
-	private EntityRobot robot;
+	private RoboBrain brain;
 
-	public RobotOutputStream setRobot( EntityRobot entity )
+	public RobotOutputStream setRobot( RoboBrain pbrane )
 	{
-		robot = entity;
+		brain = pbrane;
 		return this;
 	}
 
@@ -19,7 +19,7 @@ public class RobotOutputStream extends OutputStream
 	{
 		if ( arg0 == '\n' )
 		{
-			robot.sendToOwner( buffer.toString() );
+			brain.sendToOwner( buffer.toString() );
 			buffer.setLength( 0 );
 		}
 		else

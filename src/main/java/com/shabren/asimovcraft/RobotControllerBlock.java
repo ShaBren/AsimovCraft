@@ -3,10 +3,10 @@ package com.shabren.asimovcraft;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 
-public class RobotController extends Block
+public class RobotControllerBlock extends Block
 {
 
-	public RobotController()
+	public RobotControllerBlock()
 	{
 		super( Material.glass );
 	}

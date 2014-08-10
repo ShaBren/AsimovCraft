@@ -1,5 +1,6 @@
 package com.shabren.asimovcraft;
 
+import java.util.HashMap;
 import java.util.Random;
 
 import org.apache.logging.log4j.Logger;
@@ -9,6 +10,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityList;
 import net.minecraft.init.Blocks;
+import net.minecraft.world.World;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.Mod.Instance;
@@ -32,19 +34,25 @@ public class AsimovCraft
 	@Instance( value = "AsimovCraft" )
 	public static AsimovCraft instance;
 
-	public final static Block robotController = new RobotController().setBlockName( "robotController" ).setCreativeTab( CreativeTabs.tabBlock ).setBlockTextureName( "asimovcraft:robotController" );;
+	public final static Block robotController = new RobotControllerBlock().setBlockName( "robotController" ).setCreativeTab( CreativeTabs.tabBlock ).setBlockTextureName( "asimovcraft:robotController" );;
+	public final static Block robotBlock = new RobotBlock().setBlockName( "robotBlock" ).setCreativeTab( CreativeTabs.tabBlock ).setBlockTextureName( "asimovcraft:robotBlock" );;
 
 	@SidedProxy( clientSide = "com.shabren.asimovcraft.client.ClientProxy", serverSide = "com.shabren.asimovcraft.CommonProxy" )
 	public static CommonProxy proxy;
 
 	public static Logger logger;
 
+	private int brainCounter = 1;
+	private HashMap< Integer, RoboBrain > brainRegistry = new HashMap< Integer, RoboBrain >();
+
 	@EventHandler
 	public void init( FMLInitializationEvent event )
 	{
 		proxy.registerRenderers();
 		GameRegistry.registerBlock( robotController, "robotController" );
-		registerEntity( EntityRobot.class, "entityRobot" );
+		GameRegistry.registerBlock( robotBlock, "robotBlock" );
+		GameRegistry.registerTileEntity( EntityRobot.class, "entityRobot" );
+		// registerEntity( EntityRobot.class, "entityRobot" );
 	}
 
 	@EventHandler
@@ -60,15 +68,26 @@ public class AsimovCraft
 
 	public static void registerEntity( Class entityClass, String name )
 	{
-		//int entityID = EntityRegistry.findGlobalUniqueEntityId();
-		//long seed = name.hashCode();
-		//Random rand = new Random( seed );
-		//int primaryColor = rand.nextInt() * 16777215;
-		//int secondaryColor = rand.nextInt() * 16777215;
-
-		//EntityRegistry.registerGlobalEntityID( entityClass, name, entityID );
 		EntityRegistry.registerModEntity( entityClass, name, 0, instance, 64, 1, false );
-		//EntityList.entityEggs.put( Integer.valueOf( entityID ), new EntityList.EntityEggInfo( entityID, primaryColor, secondaryColor ) );
+	}
+
+	public static RoboBrain getBrain( World world, int brainID )
+	{
+		if ( brainID <= 0 )
+		{
+			brainID = instance.brainCounter;
+			instance.brainCounter++;
+		}
+
+		RoboBrain brain = instance.brainRegistry.get( brainID );
+
+		if ( brain == null )
+		{
+			brain = new RoboBrain( world, brainID );
+			instance.brainRegistry.put( brainID, brain );
+		}
+
+		return brain;
 	}
 
 	@EventHandler

@@ -2,86 +2,86 @@ package com.shabren.asimovcraft;
 
 public class RobotAPI
 {
-	private EntityRobot robot;
+	private RoboBrain brain;
 
-	public RobotAPI( EntityRobot pRobot )
+	public RobotAPI( RoboBrain pbrane )
 	{
-		robot = pRobot;
+		brain = pbrane;
 	}
 
 	public boolean goForward()
 	{
-		robot.queueEvent( new RobotEvent() { public void run( EntityRobot robot ) { robot.move( 1, 0, 0 ); } } );
+		brain.queueEvent( new RobotEvent() { public void run( RoboBrain brain ) { brain.move( 1, 0, 0 ); } } );
 		return true;
 	}
 
 	public boolean goBack()
 	{
-		robot.queueEvent( new RobotEvent() { public void run( EntityRobot robot ) { robot.move( -1, 0, 0 ); } } );
+		brain.queueEvent( new RobotEvent() { public void run( RoboBrain brain ) { brain.move( -1, 0, 0 ); } } );
 		return true;
 	}
 
 	public boolean goLeft()
 	{
-		robot.queueEvent( new RobotEvent() { public void run( EntityRobot robot ) { robot.move( 0, 0, -1 ); } } );
+		brain.queueEvent( new RobotEvent() { public void run( RoboBrain brain ) { brain.move( 0, 0, -1 ); } } );
 		return true;
 	}
 
 	public boolean goRight()
 	{
-		robot.queueEvent( new RobotEvent() { public void run( EntityRobot robot ) { robot.move( 0, 0, 1 ); } } );
+		brain.queueEvent( new RobotEvent() { public void run( RoboBrain brain ) { brain.move( 0, 0, 1 ); } } );
 		return true;
 	}
 
 	public boolean goUp()
 	{
-		robot.queueEvent( new RobotEvent() { public void run( EntityRobot robot ) { robot.move( 0, 1, 0 ); } } );
+		brain.queueEvent( new RobotEvent() { public void run( RoboBrain brain ) { brain.move( 0, 1, 0 ); } } );
 		return true;
 	}
 
 	public boolean goDown()
 	{
-		robot.queueEvent( new RobotEvent() { public void run( EntityRobot robot ) { robot.move( 0, -1, 0 ); } } );
+		brain.queueEvent( new RobotEvent() { public void run( RoboBrain brain ) { brain.move( 0, -1, 0 ); } } );
 		return true;
 	}
 
 	public boolean sleep()
 	{
-		robot.queueEvent( new RobotEvent() { public void run( EntityRobot robot ) {} } );
+		brain.queueEvent( new RobotEvent() { public void run( RoboBrain brain ) {} } );
 		return true;
 	}
 
 	public boolean turnRight()
 	{
-		robot.queueEvent( new RobotEvent() { public void run( EntityRobot robot ) { robot.turn( 90 );} } );
+		brain.queueEvent( new RobotEvent() { public void run( RoboBrain brain ) { brain.turn( 90 );} } );
 		return true;
 	}
 
 	public boolean turnLeft()
 	{
-		robot.queueEvent( new RobotEvent() { public void run( EntityRobot robot ) { robot.turn( -90 );} } );
+		brain.queueEvent( new RobotEvent() { public void run( RoboBrain brain ) { brain.turn( -90 );} } );
 		return true;
 	}
 
 	public boolean turnAround()
 	{
-		robot.queueEvent( new RobotEvent() { public void run( EntityRobot robot ) { robot.turn( 180 );} } );
+		brain.queueEvent( new RobotEvent() { public void run( RoboBrain brain ) { brain.turn( 180 );} } );
 		return true;
 	}
 
 	public int getX()
 	{
-		return ( int )robot.posX;
+		return ( int )brain.getX();
 	}
 
 	public int getY()
 	{
-		return ( int )robot.posY;
+		return ( int )brain.getY();
 	}
 
 	public int getZ()
 	{
-		return ( int )robot.posZ;
+		return ( int )brain.getZ();
 	}
 
 }
