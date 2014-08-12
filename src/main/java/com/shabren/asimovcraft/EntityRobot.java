@@ -3,6 +3,7 @@ package com.shabren.asimovcraft;
 import java.util.ArrayList;
 import java.util.concurrent.Semaphore;
 
+import jnr.ffi.annotations.Synchronized;
 import cpw.mods.fml.common.SidedProxy;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.MathHelper;
@@ -31,29 +32,36 @@ public class EntityRobot extends EntityLiving
 
 	private String owner;
 	private String lastSource;
+	private String name;
 	private RobotEvent nextEvent;
 	private JythonInterpreter interpreter;
 	private final Semaphore available = new Semaphore( 1, true );
 	private int currentTick = 0;
 	private int lastTick = 0;
+
 	public int facing = Facing.NORTH;
 
 	public EntityRobot( World par1 )
+	{
+		this( par1, "" );
+	}
+
+	public EntityRobot( World par1, String player )
 	{
 		super( par1 );
 
 		this.setSize( 1.0f, 1.0f );
 		this.isImmuneToFire = true;
 		this.noClip = true;
+		this.owner = player;
+		this.name = Long.toHexString( this.worldObj.getTotalWorldTime() );
 
 		this.dataWatcher.addObject( FACING, Integer.valueOf( 0 ) );
-
 		this.dataWatcher.updateObject( FACING, Integer.valueOf( facing ) );
 	}
 
-	public void loadSource( String source, String player )
+	public void loadSource( String source )
 	{
-		owner = player;
 		lastSource = source;
 
 		if ( !this.worldObj.isRemote )
@@ -62,6 +70,7 @@ public class EntityRobot extends EntityLiving
 			interpreter.api = new RobotAPI( this );
 			interpreter.setSource( source );
 			interpreter.setOStream( new RobotOutputStream().setRobot( this ) );
+			interpreter.setPriority( Thread.MIN_PRIORITY );
 			interpreter.start();
 		}
 	}
@@ -118,8 +127,6 @@ public class EntityRobot extends EntityLiving
 
 	private void processPendingEvent()
 	{
-		this.worldObj.theProfiler.startSection( "robotTick" );
-
 		if ( nextEvent != null )
 		{
 			nextEvent.run( this );
@@ -129,8 +136,6 @@ public class EntityRobot extends EntityLiving
 		nextEvent = null;
 
 		available.release();
-
-		this.worldObj.theProfiler.endSection();
 	}
 
 	public void queueEvent( RobotEvent event )
@@ -195,6 +200,7 @@ public class EntityRobot extends EntityLiving
 
 		par.setString( "source", this.lastSource );
 		par.setString( "owner", this.owner );
+		par.setString( "name", this.getName() );
 		par.setInteger( "facing", this.facing );
 	}
 
@@ -204,10 +210,8 @@ public class EntityRobot extends EntityLiving
 
 		this.facing = par.getInteger( "facing" );
 		this.owner = par.getString( "owner" );
-
-		String source = par.getString( "source" );
-
-		this.loadSource( source, owner );
+		this.setName( par.getString( "name" ) );
+		this.loadSource( par.getString( "source" ) );
 	}
 
 	public void sendToOwner( String string )
@@ -219,7 +223,7 @@ public class EntityRobot extends EntityLiving
 			return;
 		}
 
-		player.addChatMessage( new ChatComponentText( string ) );
+		player.addChatMessage( new ChatComponentText( "[" + this.getName() + "] " + string ) );
 	}
 
 	public void breakBlock( int x, int y, int z )
@@ -230,5 +234,20 @@ public class EntityRobot extends EntityLiving
 		b.dropBlockAsItem( this.worldObj, x, y, z, this.worldObj.getBlockMetadata( x, y, z ), 0 );
 		this.worldObj.removeTileEntity( x, y, z );
 		this.worldObj.setBlockToAir( x, y, z );
+	}
+	
+	public String getOwner()
+	{
+		return this.owner;
+	}
+	
+	public synchronized String getName()
+	{
+		return this.name;
+	}
+
+	public synchronized void setName( String name )
+	{
+		this.name = name;
 	}
 }

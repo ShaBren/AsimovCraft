@@ -2,86 +2,35 @@ package com.shabren.asimovcraft;
 
 public class RobotAPI
 {
-	private EntityRobot robot;
+	public enum Direction { FORWARD, BACKWARD, LEFT, RIGHT, UP, DOWN };
+
+	protected EntityRobot robot;
+
+	protected static final RobotEvent eventSleep = new RobotEvent() { public void run( EntityRobot robot ) {} };
 
 	public RobotAPI( EntityRobot pRobot )
 	{
 		robot = pRobot;
 	}
 
-	public boolean goForward()
-	{
-		robot.queueEvent( new RobotEvent() { public void run( EntityRobot robot ) { robot.move( 1, 0, 0 ); } } );
-		return true;
-	}
-
-	public boolean goBack()
-	{
-		robot.queueEvent( new RobotEvent() { public void run( EntityRobot robot ) { robot.move( -1, 0, 0 ); } } );
-		return true;
-	}
-
-	public boolean goLeft()
-	{
-		robot.queueEvent( new RobotEvent() { public void run( EntityRobot robot ) { robot.move( 0, 0, -1 ); } } );
-		return true;
-	}
-
-	public boolean goRight()
-	{
-		robot.queueEvent( new RobotEvent() { public void run( EntityRobot robot ) { robot.move( 0, 0, 1 ); } } );
-		return true;
-	}
-
-	public boolean goUp()
-	{
-		robot.queueEvent( new RobotEvent() { public void run( EntityRobot robot ) { robot.move( 0, 1, 0 ); } } );
-		return true;
-	}
-
-	public boolean goDown()
-	{
-		robot.queueEvent( new RobotEvent() { public void run( EntityRobot robot ) { robot.move( 0, -1, 0 ); } } );
-		return true;
-	}
-
 	public boolean sleep()
 	{
-		robot.queueEvent( new RobotEvent() { public void run( EntityRobot robot ) {} } );
+		robot.queueEvent( eventSleep );
 		return true;
 	}
 
-	public boolean turnRight()
+	public String getOwner()
 	{
-		robot.queueEvent( new RobotEvent() { public void run( EntityRobot robot ) { robot.turn( 1 );} } );
-		return true;
+		return robot.getOwner();
 	}
-
-	public boolean turnLeft()
+	
+	public String getName()
 	{
-		robot.queueEvent( new RobotEvent() { public void run( EntityRobot robot ) { robot.turn( -1 );} } );
-		return true;
+		return robot.getName();
 	}
-
-	public boolean turnAround()
+	
+	public void setName( String name )
 	{
-		robot.queueEvent( new RobotEvent() { public void run( EntityRobot robot ) { robot.turn( 2 );} } );
-		return true;
+		robot.setName( name );
 	}
-
-	public int getX()
-	{
-		return ( int )robot.posX;
-	}
-
-	public int getY()
-	{
-		return ( int )robot.posY;
-	}
-
-	public int getZ()
-	{
-		return ( int )robot.posZ;
-	}
-
 }
