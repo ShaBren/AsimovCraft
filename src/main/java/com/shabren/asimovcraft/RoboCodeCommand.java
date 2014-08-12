@@ -72,11 +72,11 @@ public class RoboCodeCommand implements ICommand
 			World world = player.worldObj;
 
 			EntityRobot entity;
-			entity = new EntityRobot( world );
+			entity = new EntityRobot( world, player.getCommandSenderName() );
 			entity.setPosition( player.getPlayerCoordinates().posX + 2, player.getPlayerCoordinates().posY, player.getPlayerCoordinates().posZ );
 
 			world.spawnEntityInWorld( entity );
-			entity.loadSource( command[1], player.getCommandSenderName() );
+			entity.loadSource( command[1] );
 		}
 	}
 

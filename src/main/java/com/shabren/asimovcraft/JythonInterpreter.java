@@ -48,6 +48,7 @@ public class JythonInterpreter extends Thread
 					interp.setOut( ostream );
 
 					interp.exec( "import com.shabren.asimovcraft.RobotAPI" );
+					interp.exec( "import com.shabren.asimovcraft.RobotAPIMovement" );
 					interp.set( "robot", api );
 
 					interp.exec( source );
