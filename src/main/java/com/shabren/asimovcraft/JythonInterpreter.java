@@ -69,7 +69,6 @@ public class JythonInterpreter extends Thread
 					try
 					{
 						interp.exec( source );
-						interp.exec( "laksjdf()" );
 
 						interp.exec( "print 'Execution complete. Robot deactivated.'" );
 					}
