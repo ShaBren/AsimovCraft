@@ -14,18 +14,31 @@ import org.python.util.PythonInterpreter;
 public class JythonInterpreter extends Thread
 {
 	private PythonInterpreter interp = null;
-	public RobotAPI api = null;
 	private String sourceID;
 	private OutputStream ostream;
+	private EntityRobot robot;
+	
+	private RobotAPI apiGeneral;
+	private RobotAPIMovement apiMovement;
+
 	public boolean keepRunning = true;
 
-	public JythonInterpreter()
+	public JythonInterpreter( EntityRobot robot )
 	{
+		this.robot = robot;
+		
+		apiGeneral = new RobotAPI( robot );
+		apiMovement = new RobotAPIMovement( robot );
 	}
 
 	public void setSource( String sid )
 	{
 		sourceID = sid;
+		
+		synchronized( this )
+		{
+			this.notify();
+		}
 	}
 
 	public void setOStream( OutputStream stream )
@@ -49,15 +62,35 @@ public class JythonInterpreter extends Thread
 
 					interp.exec( "import com.shabren.asimovcraft.RobotAPI" );
 					interp.exec( "import com.shabren.asimovcraft.RobotAPIMovement" );
-					interp.set( "robot", api );
+					interp.set(  "general", apiGeneral );
+					interp.set(  "movement", apiMovement );
+					interp.exec( "print 'Robot activated'" );
 
-					interp.exec( source );
+					try
+					{
+						interp.exec( source );
+						interp.exec( "laksjdf()" );
+
+						interp.exec( "print 'Execution complete. Robot deactivated.'" );
+					}
+					catch ( PyException e )
+					{
+						robot.sendToOwner( "Robot Exception:" );
+						
+						for ( String line : e.toString().split( "\n" ) )
+						{
+							robot.sendToOwner( line );
+						}
+					}
 				}
 			}
 
 			try
 			{
-				this.wait();
+				synchronized( this )
+				{
+					this.wait();
+				}
 			}
 			catch ( InterruptedException e )
 			{

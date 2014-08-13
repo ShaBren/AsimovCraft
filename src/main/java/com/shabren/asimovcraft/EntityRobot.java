@@ -66,8 +66,7 @@ public class EntityRobot extends EntityLiving
 
 		if ( !this.worldObj.isRemote )
 		{
-			interpreter = new JythonInterpreter();
-			interpreter.api = new RobotAPI( this );
+			interpreter = new JythonInterpreter( this );
 			interpreter.setSource( source );
 			interpreter.setOStream( new RobotOutputStream().setRobot( this ) );
 			interpreter.setPriority( Thread.MIN_PRIORITY );
