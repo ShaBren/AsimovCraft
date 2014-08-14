@@ -190,7 +190,7 @@ public class EntityRobot extends EntityLiving
 
 	public void threadDied()
 	{
-
+		this.sendToOwner( "I ded :(" );
 	}
 
 	public void writeEntityToNBT( NBTTagCompound par )
