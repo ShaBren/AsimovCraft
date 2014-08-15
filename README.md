@@ -25,13 +25,14 @@ Nether Star | ∞ | 4
 The api is a work in progress, but the currently available functions are:
 
 |Function | Parameters | Return Type | Description|
-|-|-|-|-|
+|---------|------------|-------------|------------|
 |`general.sleep()`| N/A | N/A | Sleep for one cycle.|
 |`general.getOwner()` | N/A | `String` | Get the name of the user who created the robot.|
 |`general.getName()` | N/A | `String` | Returns the name of the robot if set, otherwise returns the unique id.|
 |`general.setName( String name )` | `name` - the desired robot name | N/A | Sets the name of the robot.|
 |`movement.move( Direction dir )` | `dir` - the desired direction (see `Direction`) | `Boolean` | Moves the robot one block in the specified direction. Returns true if the movement succeeded, otherwise false.|
 |`movement.turn( Direction dir )` | `dir` - the desired direction | `Boolean` | Turns the robot in the specified direction. Returns true if the turn succeeded, otherwise false.|
+
 
 |Direction|
 |---------|
