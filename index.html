@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
+
+    <title>AsimovCraft by ShaBren</title>
+  </head>
+
+  <body>
+
+    <header>
+      <div class="container">
+        <h1>AsimovCraft</h1>
+        <h2>Because Robots.</h2>
+
+        <section id="downloads">
+          <a href="https://github.com/ShaBren/AsimovCraft/zipball/master" class="btn">Download as .zip</a>
+          <a href="https://github.com/ShaBren/AsimovCraft/tarball/master" class="btn">Download as .tar.gz</a>
+          <a href="https://github.com/ShaBren/AsimovCraft" class="btn btn-github"><span class="icon"></span>View on GitHub</a>
+        </section>
+      </div>
+    </header>
+
+    <div class="container">
+      <section id="main_content">
+        <h1>
+<a name="asimovcraft" class="anchor" href="#asimovcraft"><span class="octicon octicon-link"></span></a>AsimovCraft</h1>
+
+<h2>
+<a name="what-is-asimovcraft" class="anchor" href="#what-is-asimovcraft"><span class="octicon octicon-link"></span></a>What is AsimovCraft?</h2>
+
+<p>AsimovCraft is a Minecraft mod that provides in-game robots. The robots are programmable using Python.</p>
+
+<h2>
+<a name="where-can-i-download-it" class="anchor" href="#where-can-i-download-it"><span class="octicon octicon-link"></span></a>Where can I download it?</h2>
+
+<p>AsimovCraft is still in development, and is not yet ready for widespread usage. However, if you'd like to play around with it, you can clone this repository and run a <code>gradle build</code>.</p>
+
+<h2>
+<a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Usage</h2>
+
+<p>Currently, you can create a robot using the command <code>/rc set &lt;hash&gt;</code>, where <code>&lt;hash&gt;</code> is the ID of a Python script uploaded to <a href="http://haste.shabren.com">http://haste.shabren.com</a>. For example, <code>/rc set gexucuboru</code> will load a simple script that makes the robot move in circles.</p>
+
+<h3>
+<a name="fuel" class="anchor" href="#fuel"><span class="octicon octicon-link"></span></a>Fuel</h3>
+
+<p>Robots require fuel to operate. Different fuels allow the robot to operate at different speeds. The fuel types, consumption, and speed are:</p>
+
+<table>
+<thead><tr>
+<th>Fuel</th>
+<th align="right">Actions per item</th>
+<th align="right">Actions per second</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>Netherrack</td>
+<td align="right">4</td>
+<td align="right">1</td>
+</tr>
+<tr>
+<td>Coal</td>
+<td align="right">8</td>
+<td align="right">2</td>
+</tr>
+<tr>
+<td>Lava</td>
+<td align="right">50</td>
+<td align="right">2</td>
+</tr>
+<tr>
+<td>Blaze Powder</td>
+<td align="right">16</td>
+<td align="right">3</td>
+</tr>
+<tr>
+<td>Blaze Rod</td>
+<td align="right">32</td>
+<td align="right">3</td>
+</tr>
+<tr>
+<td>Nether Star</td>
+<td align="right">∞</td>
+<td align="right">4</td>
+</tr>
+</tbody>
+</table><h2>
+<a name="robot-api" class="anchor" href="#robot-api"><span class="octicon octicon-link"></span></a>Robot API</h2>
+
+<p>The api is a work in progress, but the currently available functions are:</p>
+
+<table>
+<thead><tr>
+<th>Function</th>
+<th>Parameters</th>
+<th>Return Type</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>general.sleep()</code></td>
+<td>N/A</td>
+<td>N/A</td>
+<td>Sleep for one cycle.</td>
+</tr>
+<tr>
+<td><code>general.getOwner()</code></td>
+<td>N/A</td>
+<td><code>String</code></td>
+<td>Get the name of the user who created the robot.</td>
+</tr>
+<tr>
+<td><code>general.getName()</code></td>
+<td>N/A</td>
+<td><code>String</code></td>
+<td>Returns the name of the robot if set, otherwise returns the unique id.</td>
+</tr>
+<tr>
+<td><code>general.setName( String name )</code></td>
+<td>
+<code>name</code> - the desired robot name</td>
+<td>N/A</td>
+<td>Sets the name of the robot.</td>
+</tr>
+<tr>
+<td><code>movement.move( Direction dir )</code></td>
+<td>
+<code>dir</code> - the desired direction (see <code>Direction</code>)</td>
+<td><code>Boolean</code></td>
+<td>Moves the robot one block in the specified direction. Returns true if the movement succeeded, otherwise false.</td>
+</tr>
+<tr>
+<td><code>movement.turn( Direction dir )</code></td>
+<td>
+<code>dir</code> - the desired direction</td>
+<td><code>Boolean</code></td>
+<td>Turns the robot in the specified direction. Returns true if the turn succeeded, otherwise false.</td>
+</tr>
+</tbody>
+</table><table>
+<thead><tr>
+<th>Direction</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>RobotAPI.Direction.FORWARD</code></td>
+</tr>
+<tr>
+<td><code>RobotAPI.Direction.BACKWARD</code></td>
+</tr>
+<tr>
+<td><code>RobotAPI.Direction.LEFT</code></td>
+</tr>
+<tr>
+<td><code>RobotAPI.Direction.RIGHT</code></td>
+</tr>
+<tr>
+<td><code>RobotAPI.Direction.UP</code></td>
+</tr>
+<tr>
+<td><code>RobotAPI.Direction.DOWN</code></td>
+</tr>
+</tbody>
+</table><h2>
+<a name="security-warning" class="anchor" href="#security-warning"><span class="octicon octicon-link"></span></a>Security Warning</h2>
+
+<p>While AsimovCraft attempts to sandbox user code, there is no guarantee that a skilled hacker can't break out of it. Therefore, it is recommended that you only give trusted users the ability to run code.</p>
+
+<h2>
+<a name="license" class="anchor" href="#license"><span class="octicon octicon-link"></span></a>License</h2>
+
+<p>AsimovCraft is available under the terms of the zlib license. See LICENSE.md for details.</p>
+
+<h2>
+<a name="author" class="anchor" href="#author"><span class="octicon octicon-link"></span></a>Author</h2>
+
+<p>Stephen Bryant, also known on the internet as Sha`Bren.</p>
+      </section>
+    </div>
+
+              <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-49859722-2");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
+  </body>
+</html>
