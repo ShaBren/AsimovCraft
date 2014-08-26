@@ -55,19 +55,13 @@ public class Robot
 
 	public void doTick()
 	{
-		if ( entity.worldObj.isRemote )
-		{
-			entity.renderYawOffset = 0;
-		}
-		else
-		{
-			if ( currentTick % 10 == 0 )
-			{
-				this.processPendingEvent();
-			}
 
-			currentTick++;
+		if ( currentTick % 10 == 0 )
+		{
+			this.processPendingEvent();
 		}
+
+		currentTick++;
 	}
 
 	private void processPendingEvent()
@@ -136,24 +130,24 @@ public class Robot
 	// direction = 1 for right, -1 for left
 	public void turn( int direction )
 	{
-		facing = ( facing + direction ) % 4;
+		this.facing = ( this.facing + direction ) % 4;
 
-		if ( facing < 0 )
+		if ( this.facing < 0 )
 		{
-			facing += 4;
+			this.facing += 4;
 		}
-		
-		this.goTo( entity.getX(), entity.getY(), entity.getZ() );
+
+		this.goTo( this.getX(), this.getY(), this.getZ() );
 	}
-	
+
 	public void setFacing( int facing )
 	{
 		this.facing = facing;
 	}
 
-	public void goTo( double pPosX, double pPosY, double pPosZ )
+	public void goTo( double posX, double posY, double posZ )
 	{
-		entity.setPositionAndRotation( pPosX, pPosY, pPosZ, this.facing * 90 + 45, 0 );
+		entity.setPositionAndRotation( posX, posY, posZ, this.facing * 90 + 45, 0 );
 	}
 
 	public synchronized String getOwner()
@@ -180,12 +174,12 @@ public class Robot
 	{
 		return this.lastSource;
 	}
-	
+
 	public synchronized int getFacing()
 	{
 		return this.facing;
 	}
-	
+
 	public int getX()
 	{
 		return entity.getX();

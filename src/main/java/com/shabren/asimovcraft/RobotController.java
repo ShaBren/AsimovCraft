@@ -5,9 +5,8 @@ import net.minecraft.block.material.Material;
 
 public class RobotController extends Block
 {
-
 	public RobotController()
 	{
-		super( Material.glass );
+		super( Material.iron );
 	}
 }

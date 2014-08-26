@@ -32,6 +32,18 @@ public class EntityRobot extends EntityLiving
 		this.loadRobot( player, "", "", 0 );
 	}
 
+	protected void loadRobot( String owner, String name, String source, int facing )
+	{
+		if ( !this.worldObj.isRemote )
+		{
+			this.robot = new Robot( this, owner );
+
+			this.robot.setName( name );
+			this.robot.loadSource( source );
+			this.robot.setFacing( facing );
+		}
+	}
+
 	@Override
 	protected void fall( float p_70069_1_ )
 	{
@@ -46,6 +58,11 @@ public class EntityRobot extends EntityLiving
 	public void onUpdate()
 	{
 		super.onUpdate();
+
+		if ( this.worldObj.isRemote )
+		{
+			this.renderYawOffset = 0;
+		}
 
 		if ( this.robot != null )
 		{
@@ -64,7 +81,6 @@ public class EntityRobot extends EntityLiving
 			double d3 = MathHelper.wrapAngleTo180_double( this.newRotationYaw - ( double )this.rotationYaw );
 			this.rotationYaw = ( float )( ( double )this.rotationYaw + d3 / ( double )this.newPosRotationIncrements );
 			this.rotationPitch = ( float )( ( double )this.rotationPitch + ( this.newRotationPitch - ( double )this.rotationPitch ) / ( double )this.newPosRotationIncrements );
-			// this.rotationYaw = this.facing * 90 + 45;
 			this.rotationPitch = 0;
 			--this.newPosRotationIncrements;
 			this.setPosition( d0, d1, d2 );
@@ -87,18 +103,6 @@ public class EntityRobot extends EntityLiving
 		super.readEntityFromNBT( par );
 
 		this.loadRobot( par.getString( "owner" ), par.getString( "name" ), par.getString( "source" ), par.getInteger( "facing" ) );
-	}
-
-	protected void loadRobot( String owner, String name, String source, int facing )
-	{
-		if ( !this.worldObj.isRemote )
-		{
-			this.robot = new Robot( this, owner );
-
-			this.robot.setName( name );
-			this.robot.loadSource( source );
-			this.robot.setFacing( facing );
-		}
 	}
 
 	public void breakBlock( int x, int y, int z )
