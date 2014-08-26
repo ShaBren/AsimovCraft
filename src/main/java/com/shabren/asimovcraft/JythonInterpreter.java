@@ -18,14 +18,14 @@ public class JythonInterpreter extends Thread
 	private PythonInterpreter interp = null;
 	private String sourceID;
 	private OutputStream ostream;
-	private EntityRobot robot;
+	private Robot robot;
 
 	private RobotAPI apiGeneral;
 	private RobotAPIMovement apiMovement;
 
 	public boolean keepRunning = true;
 
-	public JythonInterpreter( EntityRobot robot )
+	public JythonInterpreter( Robot robot )
 	{
 		this.robot = robot;
 
@@ -147,6 +147,8 @@ public class JythonInterpreter extends Thread
 				{
 					robot.sendToOwner( line );
 				}
+
+				robot.sendToOwner( "Robot Inactive" );
 			}
 		}
 	}

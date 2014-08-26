@@ -4,11 +4,11 @@ public class RobotAPI
 {
 	public enum Direction { FORWARD, BACKWARD, LEFT, RIGHT, UP, DOWN };
 
-	protected EntityRobot robot;
+	protected Robot robot;
 
-	protected static final RobotEvent eventSleep = new RobotEvent() { public void run( EntityRobot robot ) {} };
+	protected static final RobotEvent eventSleep = new RobotEvent() { public void run( Robot robot ) {} };
 
-	public RobotAPI( EntityRobot pRobot )
+	public RobotAPI( Robot pRobot )
 	{
 		robot = pRobot;
 	}

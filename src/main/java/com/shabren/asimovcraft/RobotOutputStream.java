@@ -6,9 +6,9 @@ import java.io.OutputStream;
 public class RobotOutputStream extends OutputStream
 {
 	private StringBuilder buffer = new StringBuilder();
-	private EntityRobot robot;
+	private Robot robot;
 
-	public RobotOutputStream setRobot( EntityRobot entity )
+	public RobotOutputStream setRobot( Robot entity )
 	{
 		robot = entity;
 		return this;

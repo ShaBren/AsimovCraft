@@ -2,17 +2,17 @@ package com.shabren.asimovcraft;
 
 public class RobotAPIMovement extends RobotAPI
 {
-	protected static final RobotEvent eventMoveBackward = new RobotEvent() { public void run( EntityRobot robot ) { robot.move( -1, 0, 0 ); } }; 
-	protected static final RobotEvent eventMoveDown = new RobotEvent() { public void run( EntityRobot robot ) { robot.move( 0, -1, 0 ); } }; 
-	protected static final RobotEvent eventMoveForward = new RobotEvent() { public void run( EntityRobot robot ) { robot.move( 1, 0, 0 ); } };
-	protected static final RobotEvent eventMoveLeft = new RobotEvent() { public void run( EntityRobot robot ) { robot.move( 0, 0, -1 ); } };
-	protected static final RobotEvent eventMoveRight = new RobotEvent() { public void run( EntityRobot robot ) { robot.move( 0, 0, 1 ); } };
-	protected static final RobotEvent eventMoveUp = new RobotEvent() { public void run( EntityRobot robot ) { robot.move( 0, 1, 0 ); } };
-	protected static final RobotEvent eventTurnBackward = new RobotEvent() { public void run( EntityRobot robot ) { robot.turn( 2 );} };
-	protected static final RobotEvent eventTurnLeft = new RobotEvent() { public void run( EntityRobot robot ) { robot.turn( -1 );} };
-	protected static final RobotEvent eventTurnRight = new RobotEvent() { public void run( EntityRobot robot ) { robot.turn( 1 );} };
+	protected static final RobotEvent eventMoveBackward = new RobotEvent() { public void run( Robot robot ) { robot.move( -1, 0, 0 ); } }; 
+	protected static final RobotEvent eventMoveDown = new RobotEvent() { public void run( Robot robot ) { robot.move( 0, -1, 0 ); } }; 
+	protected static final RobotEvent eventMoveForward = new RobotEvent() { public void run( Robot robot ) { robot.move( 1, 0, 0 ); } };
+	protected static final RobotEvent eventMoveLeft = new RobotEvent() { public void run( Robot robot ) { robot.move( 0, 0, -1 ); } };
+	protected static final RobotEvent eventMoveRight = new RobotEvent() { public void run( Robot robot ) { robot.move( 0, 0, 1 ); } };
+	protected static final RobotEvent eventMoveUp = new RobotEvent() { public void run( Robot robot ) { robot.move( 0, 1, 0 ); } };
+	protected static final RobotEvent eventTurnBackward = new RobotEvent() { public void run( Robot robot ) { robot.turn( 2 );} };
+	protected static final RobotEvent eventTurnLeft = new RobotEvent() { public void run( Robot robot ) { robot.turn( -1 );} };
+	protected static final RobotEvent eventTurnRight = new RobotEvent() { public void run( Robot robot ) { robot.turn( 1 );} };
 
-	public RobotAPIMovement( EntityRobot pRobot )
+	public RobotAPIMovement( Robot pRobot )
 	{
 		super( pRobot );
 	}
@@ -78,16 +78,16 @@ public class RobotAPIMovement extends RobotAPI
 
 	public int getX()
 	{
-		return ( int )robot.posX;
+		return ( int )robot.getX();
 	}
 
 	public int getY()
 	{
-		return ( int )robot.posY;
+		return ( int )robot.getY();
 	}
 
 	public int getZ()
 	{
-		return ( int )robot.posZ;
+		return ( int )robot.getZ();
 	}
 }
