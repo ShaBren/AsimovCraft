@@ -2,15 +2,17 @@ package com.shabren.asimovcraft;
 
 public class RobotAPIMovement extends RobotAPI
 {
-	protected static final RobotEvent eventMoveBackward = new RobotEvent() { public void run( Robot robot ) { robot.move( -1, 0, 0 ); } }; 
-	protected static final RobotEvent eventMoveDown = new RobotEvent() { public void run( Robot robot ) { robot.move( 0, -1, 0 ); } }; 
-	protected static final RobotEvent eventMoveForward = new RobotEvent() { public void run( Robot robot ) { robot.move( 1, 0, 0 ); } };
-	protected static final RobotEvent eventMoveLeft = new RobotEvent() { public void run( Robot robot ) { robot.move( 0, 0, -1 ); } };
-	protected static final RobotEvent eventMoveRight = new RobotEvent() { public void run( Robot robot ) { robot.move( 0, 0, 1 ); } };
-	protected static final RobotEvent eventMoveUp = new RobotEvent() { public void run( Robot robot ) { robot.move( 0, 1, 0 ); } };
-	protected static final RobotEvent eventTurnBackward = new RobotEvent() { public void run( Robot robot ) { robot.turn( 2 );} };
-	protected static final RobotEvent eventTurnLeft = new RobotEvent() { public void run( Robot robot ) { robot.turn( -1 );} };
-	protected static final RobotEvent eventTurnRight = new RobotEvent() { public void run( Robot robot ) { robot.turn( 1 );} };
+	/* @formatter:off */
+	protected static final RobotEvent eventMoveBackward = 	new RobotEvent() { public void run( Robot robot ) { robot.move( -1, 0, 0 ); } 	public int fuelNeeded() { return 1; } };
+	protected static final RobotEvent eventMoveDown = 		new RobotEvent() { public void run( Robot robot ) { robot.move( 0, -1, 0 ); } 	public int fuelNeeded() { return 1; } };
+	protected static final RobotEvent eventMoveForward = 	new RobotEvent() { public void run( Robot robot ) { robot.move( 1, 0, 0 ); } 	public int fuelNeeded() { return 1; } };
+	protected static final RobotEvent eventMoveLeft = 		new RobotEvent() { public void run( Robot robot ) { robot.move( 0, 0, -1 ); } 	public int fuelNeeded() { return 1; } };
+	protected static final RobotEvent eventMoveRight = 		new RobotEvent() { public void run( Robot robot ) { robot.move( 0, 0, 1 ); } 	public int fuelNeeded() { return 1; } };
+	protected static final RobotEvent eventMoveUp = 		new RobotEvent() { public void run( Robot robot ) { robot.move( 0, 1, 0 ); } 	public int fuelNeeded() { return 1; } };
+	protected static final RobotEvent eventTurnBackward = 	new RobotEvent() { public void run( Robot robot ) { robot.turn( 2 ); } 			public int fuelNeeded() { return 2; } };
+	protected static final RobotEvent eventTurnLeft = 		new RobotEvent() { public void run( Robot robot ) { robot.turn( -1 ); } 		public int fuelNeeded() { return 1; } };
+	protected static final RobotEvent eventTurnRight = 		new RobotEvent() { public void run( Robot robot ) { robot.turn( 1 ); } 			public int fuelNeeded() { return 1; } };
+	/* @formatter:on */
 
 	public RobotAPIMovement( Robot pRobot )
 	{
@@ -45,7 +47,7 @@ public class RobotAPIMovement extends RobotAPI
 			robot.queueEvent( eventMoveUp );
 			break;
 		}
-		
+
 		return true;
 	}
 
@@ -72,7 +74,7 @@ public class RobotAPIMovement extends RobotAPI
 			robot.sendToOwner( "ERROR: RobotAPIMovement.turn: Invalid direction." );
 			return false;
 		}
-		
+
 		return true;
 	}
 

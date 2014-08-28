@@ -1,9 +1,13 @@
 package com.shabren.asimovcraft;
 
+import java.util.ArrayList;
 import java.util.concurrent.Semaphore;
 
+import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ChatComponentText;
+import net.minecraft.world.World;
 
 public class Robot
 {
@@ -19,76 +23,100 @@ public class Robot
 	protected String owner;
 	protected String lastSource;
 	protected String name;
+	protected String id;
 	protected int currentTick = 0;
 	protected int lastTick = 0;
 	protected RobotEvent nextEvent;
 	protected JythonInterpreter interpreter;
 	protected int facing = Facing.NORTH;
 	protected final Semaphore available = new Semaphore( 1, true );
+	protected int fuelLevel;
+	protected int fuelTier;
+	protected int ticksPerAction;
+	protected boolean outOfFuel;
 
 	public Robot( EntityRobot entity, String player )
 	{
 		this.entity = entity;
-
 		this.owner = player;
-		this.name = Long.toHexString( entity.worldObj.getTotalWorldTime() );
+		this.fuelLevel = 0;
+		this.setFuelTier( 1 );
+
+		this.id = Long.toHexString( this.getWorld().getTotalWorldTime() );
 	}
 
 	public void loadSource( String source )
 	{
-		lastSource = source;
+		this.lastSource = source;
 
 		if ( source.length() < 1 )
 		{
 			return;
 		}
 
-		if ( !entity.worldObj.isRemote )
+		if ( !this.getWorld().isRemote )
 		{
-			interpreter = new JythonInterpreter( this );
-			interpreter.setSource( source );
-			interpreter.setOStream( new RobotOutputStream().setRobot( this ) );
-			interpreter.setPriority( Thread.MIN_PRIORITY );
-			interpreter.start();
+			this.interpreter = new JythonInterpreter( this );
+			this.interpreter.setSource( source );
+			this.interpreter.setOStream( new RobotOutputStream().setRobot( this ) );
+			this.interpreter.setPriority( Thread.MIN_PRIORITY );
+			this.interpreter.start();
 		}
 	}
 
 	public void doTick()
 	{
-
-		if ( currentTick % 10 == 0 )
+		if ( this.currentTick % this.ticksPerAction == 0 )
 		{
 			this.processPendingEvent();
 		}
 
-		currentTick++;
+		this.currentTick++;
 	}
 
 	private void processPendingEvent()
 	{
-		if ( nextEvent != null )
+		if ( this.nextEvent != null )
 		{
-			nextEvent.run( this );
-			lastTick = currentTick;
+			if ( AsimovCraft.fuelRequired )
+			{
+				if ( this.nextEvent.fuelNeeded() > this.fuelLevel )
+				{
+					if ( !this.outOfFuel )
+					{
+						this.sendToOwner( "Out of fuel!" );
+						this.outOfFuel = true;
+					}
+
+					return;
+				}
+				else
+				{
+					this.fuelLevel -= this.nextEvent.fuelNeeded();
+				}
+			}
+
+			this.nextEvent.run( this );
+			this.lastTick = this.currentTick;
 		}
 
-		nextEvent = null;
+		this.nextEvent = null;
 
-		available.release();
+		this.available.release();
 	}
 
 	public void queueEvent( RobotEvent event )
 	{
 		try
 		{
-			available.acquire();
+			this.available.acquire();
 		}
 		catch ( Exception e )
 		{
 			this.threadDied();
 		}
 
-		nextEvent = event;
+		this.nextEvent = event;
 	}
 
 	public void threadDied()
@@ -98,7 +126,7 @@ public class Robot
 
 	public void sendToOwner( String string )
 	{
-		EntityPlayer player = entity.worldObj.getPlayerEntityByName( owner );
+		EntityPlayer player = this.getWorld().getPlayerEntityByName( owner );
 
 		if ( player == null )
 		{
@@ -155,18 +183,31 @@ public class Robot
 		return this.owner;
 	}
 
+	public void breakBlock( int x, int y, int z )
+	{
+		Block b = this.getWorld().getBlock( x, y, z );
+
+		ArrayList< ItemStack > drops = b.getDrops( this.getWorld(), x, y, z, this.getWorld().getBlockMetadata( x, y, z ), 0 );
+		// b.dropBlockAsItem( this.getWorld(), x, y, z,
+		// this.getWorld().getBlockMetadata( x, y, z ), 0 );
+		this.getWorld().removeTileEntity( x, y, z );
+		this.getWorld().setBlockToAir( x, y, z );
+	}
+
 	public synchronized String getName()
 	{
-		return this.name;
+		if ( this.name.length() > 0 )
+		{
+			return this.name;
+		}
+		else
+		{
+			return this.id;
+		}
 	}
 
 	public synchronized void setName( String name )
 	{
-		if ( name.length() < 1 )
-		{
-			return; // Can't have blank name
-		}
-
 		this.name = name;
 	}
 
@@ -182,16 +223,69 @@ public class Robot
 
 	public int getX()
 	{
-		return entity.getX();
+		return this.entity.getX();
 	}
 
 	public int getY()
 	{
-		return entity.getY();
+		return this.entity.getY();
 	}
 
 	public int getZ()
 	{
-		return entity.getX();
+		return this.entity.getX();
+	}
+
+	public World getWorld()
+	{
+		return this.entity.worldObj;
+	}
+
+	public int getFuelLevel()
+	{
+		return fuelLevel;
+	}
+
+	public void setFuelLevel( int fuelLevel )
+	{
+		this.fuelLevel = fuelLevel;
+
+		if ( this.fuelLevel > 0 )
+		{
+			this.outOfFuel = false;
+		}
+	}
+
+	public int getFuelTier()
+	{
+		return fuelTier;
+	}
+
+	public void setFuelTier( int fuelTier )
+	{
+		this.fuelTier = fuelTier;
+
+		switch ( this.fuelTier )
+		{
+		case 1:
+			this.ticksPerAction = AsimovCraft.fuelTicks1;
+			break;
+
+		case 2:
+			this.ticksPerAction = AsimovCraft.fuelTicks2;
+			break;
+
+		case 3:
+			this.ticksPerAction = AsimovCraft.fuelTicks3;
+			break;
+
+		case 4:
+			this.ticksPerAction = AsimovCraft.fuelTicks4;
+			break;
+
+		default:
+			this.ticksPerAction = 10;
+			break;
+		}
 	}
 }

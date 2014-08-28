@@ -105,16 +105,6 @@ public class EntityRobot extends EntityLiving
 		this.loadRobot( par.getString( "owner" ), par.getString( "name" ), par.getString( "source" ), par.getInteger( "facing" ) );
 	}
 
-	public void breakBlock( int x, int y, int z )
-	{
-		Block b = this.worldObj.getBlock( x, y, z );
-
-		ArrayList< ItemStack > drops = b.getDrops( this.worldObj, x, y, z, this.worldObj.getBlockMetadata( x, y, z ), 0 );
-		b.dropBlockAsItem( this.worldObj, x, y, z, this.worldObj.getBlockMetadata( x, y, z ), 0 );
-		this.worldObj.removeTileEntity( x, y, z );
-		this.worldObj.setBlockToAir( x, y, z );
-	}
-
 	public int getX()
 	{
 		return ( int )posX;
