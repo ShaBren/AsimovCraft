@@ -1,6 +1,6 @@
 package com.shabren.asimovcraft;
 
-import com.shabren.asimovcraft.client.GuiRobotController;
+import com.shabren.asimovcraft.client.GuiController;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
@@ -22,9 +22,9 @@ public class CommonProxy implements IGuiHandler
 	@Override
 	public Object getClientGuiElement( int ID, EntityPlayer player, World world, int x, int y, int z )
 	{
-		if ( ID == GuiRobotController.GUI_ID )
+		if ( ID == GuiController.GUI_ID )
 		{
-			return new GuiRobotController();
+			return new GuiController();
 		}
 
 		return null;

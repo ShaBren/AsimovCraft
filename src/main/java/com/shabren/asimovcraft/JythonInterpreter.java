@@ -13,6 +13,9 @@ import org.python.core.PyObject;
 import org.python.core.PySystemState;
 import org.python.util.PythonInterpreter;
 
+import com.shabren.asimovcraft.api.RobotAPI;
+import com.shabren.asimovcraft.api.RobotAPIMovement;
+
 public class JythonInterpreter extends Thread
 {
 	private PythonInterpreter interp = null;

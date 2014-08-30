@@ -3,6 +3,8 @@ package com.shabren.asimovcraft;
 import java.util.ArrayList;
 import java.util.concurrent.Semaphore;
 
+import com.shabren.asimovcraft.api.RobotEvent;
+
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;

@@ -2,6 +2,8 @@ package com.shabren.asimovcraft;
 
 import org.apache.logging.log4j.Logger;
 
+import com.shabren.asimovcraft.controller.BlockController;
+
 import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraftforge.common.config.Configuration;

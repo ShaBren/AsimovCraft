@@ -1,4 +1,6 @@
-package com.shabren.asimovcraft;
+package com.shabren.asimovcraft.api;
+
+import com.shabren.asimovcraft.Robot;
 
 public class RobotAPI
 {
